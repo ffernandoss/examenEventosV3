@@ -59,51 +59,52 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun showFarmacias() {
-    val featuresArray = jsonObject.getJSONArray("features")
-    farmaciasLayout.removeAllViews()  // Limpiar la vista antes de agregar nuevas farmacias
+        val featuresArray = jsonObject.getJSONArray("features")
+        farmaciasLayout.removeAllViews()  // Limpiar la vista antes de agregar nuevas farmacias
 
-    // Recorrer las farmacias
-    for (i in 0 until featuresArray.length()) {
-        val feature = featuresArray.getJSONObject(i)
-        val name = feature.getJSONObject("properties").getString("title")
-        val description = feature.getJSONObject("properties").getString("description")
-        val coordinates = feature.getJSONObject("geometry").getJSONArray("coordinates")
-        val latitude = coordinates.getDouble(1)
-        val longitude = coordinates.getDouble(0)
-        val telefono = Regex("Teléfono: ([0-9]+)").find(description)?.groupValues?.get(1)
-            ?: "No encontrado"
+        // Recorrer las farmacias
+        for (i in 0 until featuresArray.length()) {
+            val feature = featuresArray.getJSONObject(i)
+            val name = feature.getJSONObject("properties").getString("title")
+            val description = feature.getJSONObject("properties").getString("description")
+            val coordinates = feature.getJSONObject("geometry").getJSONArray("coordinates")
+            val easting = coordinates.getDouble(0)
+            val northing = coordinates.getDouble(1)
+            val (latitude, longitude) = CoordinateConverter.utmToLatLon(easting, northing)
+            val telefono = Regex("Teléfono: ([0-9]+)").find(description)?.groupValues?.get(1)
+                ?: "No encontrado"
 
-        // Crear un LinearLayout para cada farmacia
-        val farmaciaLayout = LinearLayout(this)
-        farmaciaLayout.orientation = LinearLayout.HORIZONTAL
-        farmaciaLayout.setPadding(10, 10, 10, 10)
+            // Crear un LinearLayout para cada farmacia
+            val farmaciaLayout = LinearLayout(this)
+            farmaciaLayout.orientation = LinearLayout.HORIZONTAL
+            farmaciaLayout.setPadding(10, 10, 10, 10)
 
-        // Crear un TextView para mostrar la información de la farmacia
-        val farmaciaInfo = TextView(this)
-        farmaciaInfo.text = "Farmacia ${i + 1}:\nNombre: $name\nTeléfono: $telefono\n"
+            // Crear un TextView para mostrar la información de la farmacia
+            val farmaciaInfo = TextView(this)
+            farmaciaInfo.text = "Farmacia ${i + 1}:\nNombre: $name\nTeléfono: $telefono\n"
 
-        // Crear un ImageView para mostrar la imagen de la farmacia
-        val farmaciaImage = ImageView(this)
-        Glide.with(this)
-            .load(R.drawable.medicines_icon)  // Usar el ícono de la imagen cargada (sin extensión .png)
-            .into(farmaciaImage)  // Mostrar la imagen en el ImageView
-        farmaciaImage.layoutParams = LinearLayout.LayoutParams(100, 100)  // Ajustar tamaño de la imagen
+            // Crear un ImageView para mostrar la imagen de la farmacia
+            val farmaciaImage = ImageView(this)
+            Glide.with(this)
+                .load(R.drawable.medicines_icon)  // Usar el ícono de la imagen cargada (sin extensión .png)
+                .into(farmaciaImage)  // Mostrar la imagen en el ImageView
+            farmaciaImage.layoutParams = LinearLayout.LayoutParams(100, 100)  // Ajustar tamaño de la imagen
 
-        // Agregar el TextView y el ImageView al LinearLayout de la farmacia
-        farmaciaLayout.addView(farmaciaImage)
-        farmaciaLayout.addView(farmaciaInfo)
+            // Agregar el TextView y el ImageView al LinearLayout de la farmacia
+            farmaciaLayout.addView(farmaciaImage)
+            farmaciaLayout.addView(farmaciaInfo)
 
-        // Configurar evento OnClickListener para abrir Google Maps
-        farmaciaLayout.setOnClickListener {
-            val mapsUrl = "https://www.google.com/maps?q=$latitude,$longitude"
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(mapsUrl))
-            startActivity(intent)
+            // Configurar evento OnClickListener para abrir Google Maps
+            farmaciaLayout.setOnClickListener {
+                val mapsUrl = "https://www.google.com/maps?q=$latitude,$longitude"
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(mapsUrl))
+                startActivity(intent)
+            }
+
+            // Agregar el LinearLayout de la farmacia al contenedor principal
+            farmaciasLayout.addView(farmaciaLayout)
         }
-
-        // Agregar el LinearLayout de la farmacia al contenedor principal
-        farmaciasLayout.addView(farmaciaLayout)
     }
-}
 
     private fun showSpecificField(field: String) {
         val featuresArray = jsonObject.getJSONArray("features")
