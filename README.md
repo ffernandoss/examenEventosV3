@@ -29,6 +29,14 @@ Este proyecto es una aplicación Android que muestra información sobre farmacia
 
 - `onCreate(savedInstanceState: Bundle?)`: Método principal que se ejecuta al crear la actividad. Inicializa los elementos de la interfaz y muestra los datos de la farmacia seleccionada.
 
+### `CoordinateConverter`
+
+`CoordinateConverter` es una clase que maneja la conversión de coordenadas UTM a coordenadas geográficas (latitud y longitud).
+
+#### Métodos
+
+- `utmToLatLon(easting: Double, northing: Double): Pair<Double, Double>`: Convierte coordenadas UTM a latitud y longitud.
+
 ## Archivos XML
 
 ### `activity_main.xml`
@@ -41,14 +49,6 @@ Define la interfaz de usuario para `FarmaciaDetailActivity`. Contiene una `Image
 
 ## Recursos
 
-### `mapa_zaragoza.png`
-
-Imagen utilizada como fondo en `FarmaciaDetailActivity`.
-
 ### `medicines_icon.png`
 
 Icono utilizado para representar las farmacias en `MainActivity`.
-
-
-
-
