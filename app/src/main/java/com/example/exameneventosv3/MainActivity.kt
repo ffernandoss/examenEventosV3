@@ -1,5 +1,6 @@
 package com.example.exameneventosv3
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageView
@@ -65,6 +66,7 @@ class MainActivity : AppCompatActivity() {
             val feature = featuresArray.getJSONObject(i)
             val name = feature.getJSONObject("properties").getString("title")
             val description = feature.getJSONObject("properties").getString("description")
+            val coordinates = feature.getJSONObject("geometry").getJSONArray("coordinates")
             val telefono = Regex("Teléfono: ([0-9]+)").find(description)?.groupValues?.get(1)
                 ?: "No encontrado"
 
@@ -87,6 +89,15 @@ class MainActivity : AppCompatActivity() {
             // Agregar el TextView y el ImageView al LinearLayout de la farmacia
             farmaciaLayout.addView(farmaciaImage)
             farmaciaLayout.addView(farmaciaInfo)
+
+            // Agregar un clic a cada farmacia para abrir el detalle
+            farmaciaLayout.setOnClickListener {
+                val coordenadas = coordinates.join(", ")
+                val intent = Intent(this, FarmaciaDetailActivity::class.java)
+                intent.putExtra("coordenadas", coordenadas)
+                intent.putExtra("description", description)
+                startActivity(intent)
+            }
 
             // Agregar el LinearLayout de la farmacia al contenedor principal
             farmaciasLayout.addView(farmaciaLayout)
